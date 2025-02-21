@@ -1,14 +1,14 @@
 <div class="editor-container">
     <!-- Toolbar -->
     <div class="toolbar">
-        <button (click)="format('bold')"><b>B</b></button>
-        <button (click)="format('italic')"><i>I</i></button>
-        <button (click)="format('underline')"><u>U</u></button>
-        <button (click)="format('insertUnorderedList')">• List</button>
-        <button (click)="format('formatBlock', 'h1')">H1</button>
-        <button (click)="format('formatBlock', 'h2')">H2</button>
-        <button (click)="format('formatBlock', 'p')">P</button>
-        <button (click)="clearFormatting()">Clear</button>
+        <button (click)="format($event, 'bold')"><b>B</b></button>
+        <button (click)="format($event, 'italic')"><i>I</i></button>
+        <button (click)="format($event, 'underline')"><u>U</u></button>
+        <button (click)="format($event, 'insertUnorderedList')">• List</button>
+        <button (click)="format($event, 'formatBlock', 'h1')">H1</button>
+        <button (click)="format($event, 'formatBlock', 'h2')">H2</button>
+        <button (click)="format($event, 'formatBlock', 'p')">P</button>
+        <button (click)="clearFormatting($event)">Clear</button>
         <button (click)="triggerImageUpload()">📁 Upload Image</button>
         <input
             type="file"
@@ -18,13 +18,17 @@
             style="display: none;"
         />
 
-        <!-- Submit Button -->
-        <button (click)="submitContent()" class="submit-btn">📤 Submit</button>
+        <!-- Submit Button 
+        <button (click)="submitContent()" class="submit-btn">📤 Submit</button> -->
+        <!-- ADD SUBMIT BUTTON HERE, BUT ONLY IF API ENDPOINT IS DEFINED -->
+        <button *ngIf="hasApiEndpoint" (click)="submitContent()">📤 Submit</button>
         <button (click)="triggerPreview()" class="preview-btn">👁️ Preview</button>
     </div>
 
     <!-- Editor -->
-    <div class="editor" contenteditable="true" #editor (input)="updateContent()" (click)="onEditorClick($event)">
+
+
+    <div class="editor" contenteditable="true" #editor (input)="updateContent()" (click)="onEditorClick($event)" (keydown)="$event.stopPropagation()">
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vehicula.</p>
     </div>
 

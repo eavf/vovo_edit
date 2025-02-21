@@ -1,11 +1,4 @@
-// Extend the global Window interface to include apiEndpoint
-declare global {
-  interface Window {
-    apiEndpoint?: string;  // Now TypeScript knows this property exists
-  }
-}
-
-import { Component, ElementRef, ViewChild, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef, Input, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -19,7 +12,7 @@ import { VovoEditorContentService } from '../vovo-editor-content.service';  // I
   styleUrls: ['./vovo-editor.component.css']
 })
 
-export class VovoEditorComponent {
+export class VovoEditorComponent implements AfterViewInit {
   content: string = '';
 
   // Reference to the editor div
@@ -32,19 +25,13 @@ export class VovoEditorComponent {
 
   apiEndpoint: string = '';  // Initialize as empty, will be set in ngOnInit()
   isPreviewMode: boolean = false;
+  hasApiEndpoint: boolean = false; // Add a boolean to track apiEndpoint
 
-  constructor(private http: HttpClient, private contentService: VovoEditorContentService, private cdr: ChangeDetectorRef) {}
-
-  ngOnInit() {
-    // Check if the API endpoint is provided via the global window object
-    if (window && window['apiEndpoint']) {
-      this.apiEndpoint = window['apiEndpoint'];
-    } else {
-      // Fallback to default API endpoint if none provided
-      this.apiEndpoint = 'https://default-api-endpoint.com/api/save-content';
-      console.warn('API endpoint not specified in CI app. Using default endpoint:', this.apiEndpoint);
-    }
-  }
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private http: HttpClient,
+    private contentService: VovoEditorContentService
+  ) {} // Inject the content service
 
   ngAfterViewInit() {
     // Load existing content when navigating back to the editor
@@ -53,15 +40,28 @@ export class VovoEditorComponent {
 
     // Trigger change detection to resolve the ExpressionChanged error
     this.cdr.detectChanges();
+    setTimeout(() => {
+      this.hasApiEndpoint = !!this.contentService.getApiEndpoint();   // Determine apiEndpoint after view init
+    });
   }
 
   // Formatting functions
-  format(command: string, value: string = '') {
-    document.execCommand(command, false, value);
-    this.updateContent();
+  format(event: Event, command: string, value: string = '') {
+    event.preventDefault();
+    event.stopPropagation();
+    console.log('Executing command:', command, 'with value:', value);
+    try {
+      document.execCommand(command, false, value);
+      this.updateContent();
+    } catch (error) {
+      console.error('Error executing command:', command, error);
+    }
   }
 
-  clearFormatting() {
+
+  clearFormatting(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
     document.execCommand('removeFormat');
     this.updateContent();
   }
@@ -72,16 +72,16 @@ export class VovoEditorComponent {
     this.contentService.setContent(this.content);  // Save content in service
   }
 
-  // Submit the content to the server
+    // Submit the content to the server
   submitContent() {
-    if (!this.apiEndpoint) {
+    const apiEndpoint = this.contentService.getApiEndpoint();
+    if (!apiEndpoint) {
       alert('API endpoint is not specified!');
       return;
     }
 
     const payload = { content: this.content };
-
-    this.http.post(this.apiEndpoint, payload).subscribe({
+    this.http.post(apiEndpoint, payload).subscribe({
       next: (response) => {
         alert('Content submitted successfully!');
         console.log('Server response:', response);
@@ -99,8 +99,6 @@ export class VovoEditorComponent {
     this.updateContent();
     this.goToPreview.emit();
   }
-
-
 
   // Trigger the hidden file input to upload an image
   triggerImageUpload() {
@@ -205,4 +203,5 @@ export class VovoEditorComponent {
   deselectImage() {
     this.selectedImage = null;
   }
+
 }
