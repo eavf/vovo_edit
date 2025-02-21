@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef, Input, Output, EventEmitter } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef, Input, Output, EventEmitter, NgZone } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -30,7 +30,8 @@ export class VovoEditorComponent implements AfterViewInit {
   constructor(
     private cdr: ChangeDetectorRef,
     private http: HttpClient,
-    private contentService: VovoEditorContentService
+    private contentService: VovoEditorContentService,
+    private ngZone: NgZone // Inject NgZone
   ) {} // Inject the content service
 
   ngAfterViewInit() {
@@ -94,10 +95,14 @@ export class VovoEditorComponent implements AfterViewInit {
   }
 
   // Trigger preview mode
-  triggerPreview() {
-    console.log('Componnent triggered function triggerPreview');
+  triggerPreview(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    console.log('Component triggered function triggerPreview');
     this.updateContent();
-    this.goToPreview.emit();
+    this.ngZone.runOutsideAngular(() => {
+      this.goToPreview.emit(); // Emitting the event
+    });
   }
 
   // Trigger the hidden file input to upload an image

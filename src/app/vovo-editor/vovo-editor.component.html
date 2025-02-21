@@ -22,7 +22,7 @@
         <button (click)="submitContent()" class="submit-btn">📤 Submit</button> -->
         <!-- ADD SUBMIT BUTTON HERE, BUT ONLY IF API ENDPOINT IS DEFINED -->
         <button *ngIf="hasApiEndpoint" (click)="submitContent()">📤 Submit</button>
-        <button (click)="triggerPreview()" class="preview-btn">👁️ Preview</button>
+        <button (click)="triggerPreview($event)" class="preview-btn">👁️ Preview</button>
     </div>
 
     <!-- Editor -->

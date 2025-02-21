@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, NgZone } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
@@ -12,13 +12,21 @@ export class VovoPreviewComponent {
   @Output() closePreview = new EventEmitter<void>();
   safeContent: SafeHtml = '';
 
-  constructor(private sanitizer: DomSanitizer) {}
+  constructor(
+    private sanitizer: DomSanitizer,
+    private ngZone: NgZone // Inject NgZone
+  ) {}
 
   ngOnInit() {
     this.safeContent = this.sanitizer.bypassSecurityTrustHtml(this.content);
   }
 
-  backToEditor() {
-    this.closePreview.emit();
+  backToEditor(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    console.log('Component triggered function triggerPreview');
+    this.ngZone.runOutsideAngular(() => {
+      this.closePreview.emit();   // Emitting the event
+    });
   }
 }
