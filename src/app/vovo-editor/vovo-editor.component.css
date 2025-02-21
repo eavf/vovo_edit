@@ -1,0 +1,129 @@
+.editor-container {
+  width: 100%; /* Make it take full width of the parent */
+  max-width: 800px; /* Optional: Set a reasonable max width */
+  margin: 20px auto; /* Center the container while removing excess left/right space */
+  font-family: Arial, sans-serif;
+  padding: 0; /* Remove extra padding */
+}
+
+.toolbar, .editor {
+  width: 100%; /* Ensure both elements take full width of .editor-container */
+  box-sizing: border-box; /* Prevents extra width due to padding */
+  margin: 0; /* Remove any potential extra margins */
+}
+
+
+/* Apply background to the Angular web component */
+app-vovo-editor {
+  background-color: red;
+  display: block;
+  width: 100%;
+}
+
+/* Override Angular's ViewEncapsulation if necessary */
+::ng-deep app-editor {
+  background-color: red;
+  display: block;
+  width: 100%;
+}
+
+/* Toolbar styling */
+.toolbar {
+  background: #f0f0f0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 5px;
+  display: flex;
+  flex-wrap: wrap;  /* Ensures buttons wrap correctly */
+  justify-content: start;
+  width: 100%;  /* Ensures it matches the editor */
+  box-sizing: border-box;  /* Includes padding & border in width calculation */
+}
+
+/* Prevents contenteditable from expanding */
+.editor {
+  min-height: 300px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background: #fff;
+  width: 100%;  /* Ensures it matches toolbar */
+  max-width: 100%;  /* Prevents horizontal scrolling */
+  box-sizing: border-box; /* Ensures padding/border don't make it wider */
+  overflow-x: hidden; 
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+
+.toolbar button {
+  margin-right: 5px;
+  padding: 5px 10px;
+  border: none;
+  background: #e0e0e0;
+  cursor: pointer;
+  font-weight: bold;
+  white-space: nowrap;  /* Prevents button text from wrapping */
+}
+
+.toolbar button:hover {
+  background: #d0d0d0;
+}
+
+
+/* Ensures images stay within the editor and are responsive */
+.editor img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #ddd;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  margin: 10px 0;
+}
+
+/* Floating Image Toolbar */
+.image-toolbar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 10px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.image-toolbar label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.image-toolbar input,
+.image-toolbar select {
+  width: 150px;
+  margin-left: 10px;
+  padding: 3px;
+}
+
+.image-toolbar button {
+  margin-top: 10px;
+  padding: 5px 10px;
+  border: none;
+  background: #4CAF50;
+  color: white;
+  cursor: pointer;
+}
+
+.image-toolbar button:hover {
+  background: #45a049;
+}
+
+/* Ensures <pre> displays content in multiple lines */
+pre {
+  background: #f9f9f9;
+  padding: 10px;
+  border: 1px solid #ccc;
+  overflow-x: auto;
+  white-space: pre-wrap;  /* Ensures content respects line breaks */
+  word-wrap: break-word;
+}
